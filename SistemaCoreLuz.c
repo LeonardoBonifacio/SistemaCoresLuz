@@ -52,6 +52,7 @@ float calculate_saturation(uint16_t r, uint16_t g, uint16_t b);
 uint8_t adjust_brightness(uint16_t lux);
 void set_rgb_outputs_for_state(int state);
 void init_pwm_rgb(void);
+uint16_t get_color_frequency(const char* color_name); // Nova função
 
 
 // --- Definições dos Pinos ---
@@ -112,6 +113,7 @@ int main()
     bh1750_power_on(I2C_PORT);
 
     // Inicializa o buzzer
+    init_buzzer(BUZZER_A_PIN, 50.0f);
     init_buzzer(BUZZER_B_PIN, 50.0f);
 
     // Inicializa a matriz LED
@@ -125,6 +127,7 @@ int main()
     uint16_t lux;
     float saturation;
     const char* color_name;
+    const char* last_color_name = ""; // Armazena a última cor detectada
     uint8_t brightness;
     bool brightness_alert = false;
 
@@ -151,7 +154,6 @@ int main()
             sleep_ms(120);
         }
 
-
         // Lê os valores de cor do GY-33
         gy33_read_color(&r, &g, &b, &c);
 
@@ -163,6 +165,20 @@ int main()
 
         // Determina o nome da cor
         color_name = determine_color_name(r, g, b);
+
+        // Verifica se a cor mudou e toca o buzzer com frequência correspondente
+        if (strcmp(color_name, last_color_name) != 0 && strcmp(color_name, "Escuro") != 0 && strcmp(color_name, "Indefinido") != 0) {
+            // Obtém a frequência para a cor detectada
+            uint16_t freq = get_color_frequency(color_name);
+
+            // Toca o buzzer brevemente com a frequência da cor
+            play_tone(BUZZER_A_PIN, freq);
+            sleep_ms(150);
+            stop_tone(BUZZER_A_PIN);
+
+            // Atualiza a última cor detectada
+            last_color_name = color_name;
+        }
 
         // Ajusta o brightness com base na luminosidade
         brightness = adjust_brightness(lux);
@@ -195,7 +211,6 @@ int main()
         // Atualiza o display
         ssd1306_send_data(&ssd);
 
-
         // Controla a matriz LED
         // Normaliza os valores RGB para 0-255
         uint8_t r_norm = (r > 255) ? 255 : (uint8_t)r;
@@ -210,7 +225,7 @@ int main()
         // Atualiza a matriz LED com a cor detectada
         set_one_led(r_norm, g_norm, b_norm, matriz_preenchida);
 
-        // Verifica condições para alertas sonoros
+        // Verifica condições para alertas sonoros de luminosidade (mantém o código existente)
         if (lux < LUX_LIMITE_BAIXO && !brightness_alert) {
             // Alerta de luminosidade baixa
             play_tone(BUZZER_B_PIN, 10000); // Tom de 1000Hz
@@ -224,6 +239,7 @@ int main()
         } else if (lux >= LUX_LIMITE_BAIXO) {
             brightness_alert = false;
         }
+
         // Aguarda antes da próxima leitura
         sleep_ms(100);
     }
@@ -443,4 +459,18 @@ void set_rgb_outputs_for_state(int state)
             pwm_set_chan_level(slice_b, chan_b, 0);
             break;
     }
+}
+
+// Função para mapear cores a frequências específicas para o buzzer
+uint16_t get_color_frequency(const char* color_name) {
+    if (strcmp(color_name, "Vermelho") == 0) return 262; // Dó (C4)
+    if (strcmp(color_name, "Verde") == 0) return 330; // Mi (E4)
+    if (strcmp(color_name, "Azul") == 0) return 392; // Sol (G4)
+    if (strcmp(color_name, "Amarelo") == 0) return 294; // Ré (D4)
+    if (strcmp(color_name, "Magenta") == 0) return 349; // Fá (F4)
+    if (strcmp(color_name, "Ciano") == 0) return 440; // Lá (A4)
+    if (strcmp(color_name, "Branco") == 0) return 523; // Dó (C5)
+
+    // Frequência padrão para outras cores
+    return 196; // Sol (G3)
 }
