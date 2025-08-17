@@ -53,7 +53,7 @@ uint8_t adjust_brightness(uint16_t lux);
 void set_rgb_outputs_for_state(int state);
 void init_pwm_rgb(void);
 uint16_t get_color_frequency(const char* color_name); // Nova função
-
+void gpio_irq_handler(uint gpio, uint32_t events);
 
 // --- Definições dos Pinos ---
 const uint BTN_A_PIN = 5;  // Pino para o Botão A
