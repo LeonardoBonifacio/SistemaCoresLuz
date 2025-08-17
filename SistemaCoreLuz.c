@@ -203,7 +203,7 @@ int main()
 
         // Exibe o estado do sistema
         if (lux < LUX_LIMITE_BAIXO) {
-            ssd1306_draw_string(&ssd, "ALERTA: Luz Baixa!", 0, 50);
+            ssd1306_draw_string(&ssd, "Luz Baixa!!!", 0, 50);
         } else {
             ssd1306_draw_string(&ssd, "Sistema OK", 0, 50);
         }
