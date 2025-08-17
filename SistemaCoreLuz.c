@@ -461,16 +461,16 @@ void set_rgb_outputs_for_state(int state)
     }
 }
 
-// Função para mapear cores a frequências específicas para o buzzer
+// Função para mapear cores a frequências específicas para o buzzer (acima de 10.000 Hz)
 uint16_t get_color_frequency(const char* color_name) {
-    if (strcmp(color_name, "Vermelho") == 0) return 262; // Dó (C4)
-    if (strcmp(color_name, "Verde") == 0) return 330; // Mi (E4)
-    if (strcmp(color_name, "Azul") == 0) return 392; // Sol (G4)
-    if (strcmp(color_name, "Amarelo") == 0) return 294; // Ré (D4)
-    if (strcmp(color_name, "Magenta") == 0) return 349; // Fá (F4)
-    if (strcmp(color_name, "Ciano") == 0) return 440; // Lá (A4)
-    if (strcmp(color_name, "Branco") == 0) return 523; // Dó (C5)
+    if (strcmp(color_name, "Vermelho") == 0) return 12620; // Baseado em C4
+    if (strcmp(color_name, "Verde") == 0) return 13300; // Baseado em E4
+    if (strcmp(color_name, "Azul") == 0) return 13920; // Baseado em G4
+    if (strcmp(color_name, "Amarelo") == 0) return 12940; // Baseado em D4
+    if (strcmp(color_name, "Magenta") == 0) return 13490; // Baseado em F4
+    if (strcmp(color_name, "Ciano") == 0) return 14400; // Baseado em A4
+    if (strcmp(color_name, "Branco") == 0) return 15230; // Baseado em C5
 
     // Frequência padrão para outras cores
-    return 196; // Sol (G3)
+    return 11960; // Baseado em G3
 }
