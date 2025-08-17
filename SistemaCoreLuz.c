@@ -53,7 +53,7 @@ uint8_t adjust_brightness(uint16_t lux);
 void set_rgb_outputs_for_state(int state);
 void init_pwm_rgb(void);
 uint16_t get_color_frequency(const char* color_name); // Nova função
-
+void gpio_irq_handler(uint gpio, uint32_t events);
 
 // --- Definições dos Pinos ---
 const uint BTN_A_PIN = 5;  // Pino para o Botão A
@@ -203,7 +203,7 @@ int main()
 
         // Exibe o estado do sistema
         if (lux < LUX_LIMITE_BAIXO) {
-            ssd1306_draw_string(&ssd, "ALERTA: Luz Baixa!", 0, 50);
+            ssd1306_draw_string(&ssd, "Luz Baixa!!!", 0, 50);
         } else {
             ssd1306_draw_string(&ssd, "Sistema OK", 0, 50);
         }
